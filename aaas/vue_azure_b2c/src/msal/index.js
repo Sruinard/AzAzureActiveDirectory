@@ -7,11 +7,11 @@ import config from "../config";
  */
 const msalConfig = {
   auth: {
-    clientId: "e533862b-c801-48e9-a473-c9fda98802d4",
+    clientId: "77ff80ab-8f95-42e3-a3e7-cda0df14b991",
     // authority: "https://login.microsoftonline.com/common",
     authority:
-      "https://sruinardorg.b2clogin.com/sruinardorg.onmicrosoft.com/B2C_1_abc",
-    knownAuthorities: ["sruinardorg.b2clogin.com"],
+      "https://micrard.b2clogin.com/micrard.onmicrosoft.com/B2C_1_micrard",
+    knownAuthorities: ["micrard.b2clogin.com"],
     redirectUri: "http://localhost:8080",
   },
   cache: {
@@ -52,13 +52,13 @@ const msalConfig = {
 // const loginRequest = {
 //   scopes: ["User.Read"],
 // };
-const apiConfig = {
-  b2cScopes: ["https://sruinardorg.onmicrosoft.com/helloapi/demo.read"],
-  webApi: "https://fabrikamb2chello.azurewebsites.net/hello",
-};
-const loginRequest = {
-  scopes: ["openid", "offline_access", "e533862b-c801-48e9-a473-c9fda98802d4"],
-};
+// const apiConfig = {
+//   b2cScopes: ["https://micrard.onmicrosoft.com/helloapi/demo.read"],
+// webApi: "https://fabrikamb2chello.azurewebsites.net/hello",
+// };
+// const loginRequest = {
+//   scopes: ["openid", "offline_access", "77ff80ab-8f95-42e3-a3e7-cda0df14b991"],
+// };
 
 /**
  * Add here the scopes to request when obtaining an access token for MS Graph API. For more information, see:
@@ -68,64 +68,43 @@ const loginRequest = {
 //   scopes: ["User.Read", "Mail.Read"],
 //   forceRefresh: false, // Set this to "true" to skip a cached token and go to the server to get a new token
 // };
-
 class msalObject {
   constructor() {
     this.app = new msal.PublicClientApplication(msalConfig);
-    this.username = "";
+    this.isAuthenticated = false;
     this.accessToken = "";
+    this.loginRequest = {
+      scopes: [
+        "openid",
+        "offline_access",
+        "77ff80ab-8f95-42e3-a3e7-cda0df14b991",
+      ],
+    };
   }
   obtainToken(account) {
-    let tokenRequest = {
-      scopes: ["user.read"],
-      account: account,
-    };
+    let tokenRequest = Object.assign({ account: account }, this.loginRequest);
     this.app.acquireTokenSilent(tokenRequest).then((accessTokenResponse) => {
-      // Acquire token silent success
       this.accessToken = accessTokenResponse.accessToken;
-      console.log(this.accessToken);
     });
+    return this.accessToken;
   }
-  login() {
-    /**
-     * You can pass a custom request object below. This will override the initial configuration. For more information, visit:
-     * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/request-response-object.md#request
-     */
-
-    this.app
-      .loginPopup(loginRequest)
+  async login() {
+    var parent = this;
+    await this.app
+      .loginPopup(this.loginRequest)
       .then((response) => {
-        this.username = "stefruinard";
-
-        let tokenRequest = {
-          scopes: [
-            "openid",
-            "offline_access",
-            "e533862b-c801-48e9-a473-c9fda98802d4",
-          ],
-          account: response.account,
-        };
-        this.app
-          .acquireTokenSilent(tokenRequest)
-          .then((accessTokenResponse) => {
-            // Acquire token silent success
-            this.accessToken = accessTokenResponse.accessToken;
-            console.log("You are rocking: ", accessTokenResponse);
-            console.log(this.accessToken);
-          });
-
-        return this.username;
+        parent.obtainToken(response.account);
+        parent.isAuthenticated = true;
+        console.log("AUTHENTICATED", parent.isAuthenticated);
+        return parent.isAuthenticated;
       })
       .catch((error) => {
         console.error(error);
       });
+
+    return this.isAuthenticated;
   }
   logout() {
-    /**
-     * You can pass a custom request object below. This will override the initial configuration. For more information, visit:
-     * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/request-response-object.md#request
-     */
-
     const logoutRequest = {
       account: this.app.getAccountByUsername(this.username),
       postLogoutRedirectUri: msalConfig.auth.redirectUri,
@@ -133,99 +112,8 @@ class msalObject {
     };
 
     this.app.logoutPopup(logoutRequest);
-  }
-
-  selectAccount() {
-    /**
-     * See here for more info on account retrieval:
-     * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
-     */
-
-    const currentAccounts = this.app.getAllAccounts();
-
-    if (currentAccounts.length < 1) {
-      return;
-    } else if (currentAccounts.length > 1) {
-      /**
-       * Due to the way MSAL caches account objects, the auth response from initiating a user-flow
-       * is cached as a new account, which results in more than one account in the cache. Here we make
-       * sure we are selecting the account with homeAccountId that contains the sign-up/sign-in user-flow,
-       * as this is the default flow the user initially signed-in with.
-       */
-      const accounts = currentAccounts.filter((account) =>
-        account.homeAccountId
-          .toUpperCase()
-          .includes(
-            msalConfig.auth.authority.toUpperCase() &&
-              account.idTokenClaims.iss.toUpperCase()
-          )
-      );
-
-      if (accounts.length > 1) {
-        // localAccountId identifies the entity for which the token asserts information.
-        if (
-          accounts.every(
-            (account) => account.localAccountId === accounts[0].localAccountId
-          )
-        ) {
-          // All accounts belong to the same user
-          this.username = accounts[0].username;
-        } else {
-          // Multiple users detected. Logout all to be safe.
-          this.logout();
-        }
-      } else if (accounts.length === 1) {
-        this.username = accounts[0].username;
-      }
-    } else if (currentAccounts.length === 1) {
-      this.username = currentAccounts[0].username;
-    }
+    this.isAuthenticated = false;
   }
 }
 
 export default msalObject;
-// Create an instance of PublicClientApplication
-// const msalInstance = new PublicClientApplication(msalConfig);
-
-// // Handle the redirect flows
-// msalInstance
-//   .handleRedirectPromise()
-//   .then((tokenResponse) => {
-//     // Handle redirect response
-//   })
-//   .catch((error) => {
-//     // Handle redirect error
-//   });
-
-// export default class AuthService {
-//   constructor() {
-//     this.applicationConfig = {
-//       clientID: config.clientid,
-//       authority: config.authority,
-//     };
-//     this.app = new Msal.UserAgentApplication(
-//       this.applicationConfig.clientID,
-//       this.applicationConfig.authority
-//     );
-//   }
-
-//   login() {
-//     this.app.loginPopup().then(
-//       (token) => {
-//         console.log("JWT token " + token);
-//       },
-//       (error) => {
-//         console.log("Login error " + error);
-//       }
-//     );
-//   }
-
-//   logout() {
-//     this.app._user = null;
-//     this.app.logout();
-//   }
-
-//   getUser() {
-//     return this.app.getUser();
-//   }
-// }

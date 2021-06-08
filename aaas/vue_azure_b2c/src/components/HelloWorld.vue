@@ -2,11 +2,10 @@
   <div>
     <div id="label">Sign-in with Microsoft Azure AD B2C</div>
 
-    <button @click="login" v-if="!user">Login</button>
-    <button @click="logout" v-if="user">Logout</button>
+    <button @click="login" v-if="!isAuth">Login</button>
+    <button @click="logout" v-if="isAuth">Logout</button>
 
-    <button @click="token">token</button>
-    <div v-if="user">Hello from Vue.js. User is {{ user }}</div>
+    <div v-if="isAuth">You have successfully signed in.</div>
   </div>
 </template>
 
@@ -15,39 +14,25 @@ export default {
   name: "HelloWorld",
   data() {
     return {
-      name: "",
+      isAuth: false,
     };
   },
-  created() {
-    this.$AuthService.selectAccount();
-  },
   methods: {
-    token() {
-      console.log("gettign token");
-      let account = this.$AuthService.app.getAllAccounts()[0];
-      console.log("account is:", account);
-      this.$AuthService.obtainToken(account);
-    },
     login() {
-      this.name = "";
-      this.$AuthService.login();
-      this.name = this.$AuthService.username;
-      console.log("something1", this.name);
-      this.name = "stefruinard";
-      console.log("something2", this.name);
+      let parent = this;
+      let loginPromise = this.$AuthService.login();
+
+      loginPromise.then((isAuthenticated) => {
+        parent.isAuth = isAuthenticated;
+      });
     },
     logout() {
       this.$AuthService.logout();
     },
   },
-  computed: {
-    user: function () {
-      if (this.name != "") {
-        console.log("hello!!!!!!");
-      }
-      console.log(this.name);
-      return this.name;
-      // return this.name;
+  watch: {
+    isAuth: function () {
+      return this.isAuth;
     },
   },
 };
