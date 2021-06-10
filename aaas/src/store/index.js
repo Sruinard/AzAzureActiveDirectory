@@ -12,7 +12,8 @@ const msalConfig = {
     authority:
       "https://micrard.b2clogin.com/micrard.onmicrosoft.com/B2C_1_micrard",
     knownAuthorities: ["micrard.b2clogin.com"],
-    redirectUri: "http://localhost:8080",
+    // redirectUri: "http://localhost:8080",
+    redirectUri: "https://ambitious-hill-0f31b8f03.azurestaticapps.net",
   },
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored
