@@ -12,8 +12,7 @@ const msalConfig = {
     authority:
       "https://micrard.b2clogin.com/micrard.onmicrosoft.com/B2C_1_micrard",
     knownAuthorities: ["micrard.b2clogin.com"],
-    // redirectUri: "http://localhost:8080",
-    redirectUri: "https://ambitious-hill-0f31b8f03.azurestaticapps.net",
+    redirectUri: "http://localhost:8080",
   },
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -100,12 +99,15 @@ export default new Vuex.Store({
       });
     },
     async getCabs({ commit, state }, data) {
-      const content = await axios.get(`${baseURL}/api/cabs?city=${data.city}`, {
-        headers: {
-          Authorization: `Bearer ${state.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const content = await axios.get(
+        `${baseURL}/api/cabs/?city=${data.city}`,
+        {
+          headers: {
+            Authorization: `Bearer ${state.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(content.data);
       commit("setCabs", content.data);
     },
