@@ -3,18 +3,12 @@
     <v-row class="text-center">
       <v-col>
         <div v-if="!isSignedIn">
-          <v-btn @click="login">login</v-btn>
+          <h3>Login to get an access token.</h3>
         </div>
         <div v-else>
-          <v-btn @click="logout">logout</v-btn>
-          <v-btn @click="obtainToken">getToken</v-btn>
-          <v-btn @click="getWelcomeMessage({ name: 'stef Ruinard' })"
-            >getWelcomeMessage</v-btn
-          >
-
+          <v-btn @click="obtainToken">Get Your Access Token</v-btn>
           <h3>Your Access Token:</h3>
           <h5>{{ accessToken }}</h5>
-          <h5>{{ welcomeMessage }}</h5>
         </div>
       </v-col>
     </v-row>
@@ -26,13 +20,10 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Registration",
   methods: {
-    ...mapActions(["login", "logout", "obtainToken", "getWelcomeMessage"]),
+    ...mapActions(["obtainToken"]),
     ...mapGetters(["isAuth"]),
   },
   computed: {
-    welcomeMessage() {
-      return this.$store.state.welcome;
-    },
     isSignedIn() {
       return this.isAuth();
     },

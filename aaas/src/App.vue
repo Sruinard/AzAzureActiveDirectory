@@ -2,35 +2,15 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <v-btn text to="/">Home</v-btn>
+        <v-btn v-if="isAuth" text to="/cabs">Cabs</v-btn>
       </div>
 
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <div class="d-flex align-center">
+        <v-btn v-if="isAuth" text @click="logout">logout</v-btn>
+        <v-btn v-else text @click="login">login</v-btn>
+      </div>
     </v-app-bar>
 
     <v-main>
@@ -40,11 +20,22 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "App",
 
   data: () => ({
     //
   }),
+  methods: {
+    ...mapActions(["login", "logout"]),
+  },
+
+  computed: {
+    isAuth() {
+      return this.$store.state.isAuth;
+    },
+  },
 };
 </script>

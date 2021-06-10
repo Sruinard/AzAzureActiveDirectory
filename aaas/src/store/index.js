@@ -4,7 +4,8 @@ import * as msal from "@azure/msal-browser";
 import axios from "axios";
 Vue.use(Vuex);
 
-const baseURL = "https://cawebappdemo17853.azurewebsites.net/";
+const baseURL = "https://apim-we-micrard.azure-api.net";
+// const baseURL = "https://cawebappdemo31596.azurewebsites.net";
 const msalConfig = {
   auth: {
     clientId: "77ff80ab-8f95-42e3-a3e7-cda0df14b991",
@@ -48,7 +49,7 @@ export default new Vuex.Store({
   state() {
     return {
       account: {},
-      welcome: "",
+      cabs: [],
       accessToken: "",
       isAuth: false,
       loginRequest: {
@@ -97,11 +98,24 @@ export default new Vuex.Store({
         commit("setAccessToken", accessTokenResponse.accessToken);
       });
     },
-    async getWelcomeMessage(context, data) {
-      const content = await axios.get(baseURL);
+    async getCabs({ commit, state }, data) {
+      const content = await axios.get(`${baseURL}/api/cabs?city=${data.city}`, {
+        headers: {
+          Authorization: `Bearer ${state.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(content.data);
+      commit("setCabs", content.data);
+    },
+    async postCab(context, data) {
+      const content = await axios.post(`${baseURL}/api/cabs`, {
+        city: data.city,
+        is_available: true,
+      });
       console.log(content);
       console.log(data);
-      context.commit("setWelcomeMessage", content.data);
+      context.commit("setCabs", content.data);
     },
   },
   mutations: {
@@ -114,8 +128,8 @@ export default new Vuex.Store({
     setIsAuth(state, isAuth) {
       state.isAuth = isAuth;
     },
-    setWelcomeMessage(state, content) {
-      state.welcome = content;
+    setCabs(state, content) {
+      state.cabs = content;
     },
   },
 });
