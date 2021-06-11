@@ -24,10 +24,6 @@ import { mapActions } from "vuex";
 
 export default {
   name: "App",
-
-  data: () => ({
-    //
-  }),
   methods: {
     ...mapActions(["login", "logout"]),
   },

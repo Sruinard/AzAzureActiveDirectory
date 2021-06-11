@@ -70,11 +70,11 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    login(context, state) {
+    login({ commit, state, dispatch }) {
       clientApp.loginPopup(state.loginRequest).then((response) => {
-        context.commit("setAccount", response.account);
-        context.commit("setIsAuth", true);
-        console.log(response.account);
+        commit("setAccount", response.account);
+        commit("setIsAuth", true);
+        dispatch("obtainToken");
       });
     },
     logout(context) {
@@ -89,7 +89,7 @@ export default new Vuex.Store({
       context.commit("setIsAuth", false);
       context.commit("setAccessToken", "");
     },
-    obtainToken({ commit, state }) {
+    async obtainToken({ commit, state }) {
       let tokenRequest = Object.assign(
         { account: state.account },
         state.loginRequest
@@ -100,14 +100,15 @@ export default new Vuex.Store({
     },
     async getCabs({ commit, state }, data) {
       const content = await axios.get(
-        `${baseURL}/api/cabs/?city=${data.city}`,
-        {
-          headers: {
-            Authorization: `Bearer ${state.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `${baseURL}/api/cabs/?city=${data.city}`
+        // {
+        //   headers: {
+        //     // Authorization: `Bearer ${state.accessToken}`,
+        //     "Content-Type": "application/json",
+        //   },
+        // }
       );
+      console.log(state);
       console.log(content.data);
       commit("setCabs", content.data);
     },
@@ -116,13 +117,12 @@ export default new Vuex.Store({
         city: data.city,
         is_available: true,
       });
-      console.log(content);
-      console.log(data);
-      context.commit("setCabs", content.data);
+      context.commit("setCabs", [content.data]);
     },
   },
   mutations: {
     setAccessToken(state, token) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
       state.accessToken = token;
     },
     setAccount(state, account) {

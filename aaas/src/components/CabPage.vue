@@ -2,6 +2,7 @@
   <v-container class="mt-5">
     <v-row class="text-center pa-xl">
       <v-col>
+        <h3>Search for cabs in city</h3>
         <v-text-field v-model="search" label="Search" required></v-text-field>
         <v-btn color="primary" @click="Fetch">Fetch</v-btn>
         <v-card
@@ -23,6 +24,7 @@
           </v-list-item> </v-card
         ><v-card></v-card> </v-col
       ><v-col>
+        <h3>Create a cab for the city of your likings.</h3>
         <form>
           <v-text-field v-model="city" label="City" required></v-text-field>
           <v-btn color="primary" @click="submit">Submit</v-btn>
@@ -41,18 +43,8 @@ export default {
   data: function () {
     return {
       city: "",
-      search: "Amsterdam",
-      items: [
-        {
-          city: "Amsterdam",
-        },
-        {
-          city: "Amsterdam",
-        },
-        {
-          city: "Amsterdam",
-        },
-      ],
+      search: "",
+      items: [],
     };
   },
   computed: {
@@ -65,7 +57,7 @@ export default {
       this.$store.dispatch("getCabs", { city: this.search });
     },
     submit() {
-      this.$store.dispatch("postCab", { city: this.search });
+      this.$store.dispatch("postCab", { city: this.city });
     },
   },
 };
