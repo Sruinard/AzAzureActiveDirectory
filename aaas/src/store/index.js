@@ -104,8 +104,8 @@ export default new Vuex.Store({
       });
     },
     async getCabs({ commit }, data) {
-      const content = await axios.get(`${baseURL}/api/cabs/?city=${data.city}`);
       console.log("Running!!aasdfasdfasdf!");
+      const content = await axios.get(`${baseURL}/api/cabs?city=${data.city}`);
       commit("setCabs", content.data);
     },
     async postCab(context, data) {
