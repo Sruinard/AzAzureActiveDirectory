@@ -5,14 +5,19 @@ import axios from "axios";
 Vue.use(Vuex);
 
 const baseURL = "https://apim-we-micrard.azure-api.net";
-// const baseURL = "https://cawebappdemo31596.azurewebsites.net";
+const clientId = "77ff80ab-8f95-42e3-a3e7-cda0df14b991";
+const authority =
+  "https://micrard.b2clogin.com/micrard.onmicrosoft.com/B2C_1_micrard";
+const knownAuthorities = ["micrard.b2clogin.com"];
+// const redirectUri = "http://localhost:8080";
+const redirectUri = "https://ambitious-hill-0f31b8f03.azurestaticapps.net";
+
 const msalConfig = {
   auth: {
-    clientId: "77ff80ab-8f95-42e3-a3e7-cda0df14b991",
-    authority:
-      "https://micrard.b2clogin.com/micrard.onmicrosoft.com/B2C_1_micrard",
-    knownAuthorities: ["micrard.b2clogin.com"],
-    redirectUri: "http://localhost:8080",
+    clientId: clientId,
+    authority: authority,
+    knownAuthorities: knownAuthorities,
+    redirectUri: redirectUri,
   },
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -98,18 +103,8 @@ export default new Vuex.Store({
         commit("setAccessToken", accessTokenResponse.accessToken);
       });
     },
-    async getCabs({ commit, state }, data) {
-      const content = await axios.get(
-        `${baseURL}/api/cabs/?city=${data.city}`
-        // {
-        //   headers: {
-        //     // Authorization: `Bearer ${state.accessToken}`,
-        //     "Content-Type": "application/json",
-        //   },
-        // }
-      );
-      console.log(state);
-      console.log(content.data);
+    async getCabs({ commit }, data) {
+      const content = await axios.get(`${baseURL}/api/cabs/?city=${data.city}`);
       commit("setCabs", content.data);
     },
     async postCab(context, data) {
