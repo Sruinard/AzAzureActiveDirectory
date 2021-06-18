@@ -9,8 +9,8 @@ const clientId = "77ff80ab-8f95-42e3-a3e7-cda0df14b991";
 const authority =
   "https://micrard.b2clogin.com/micrard.onmicrosoft.com/B2C_1_micrard";
 const knownAuthorities = ["micrard.b2clogin.com"];
-// const redirectUri = "http://localhost:8080";
-const redirectUri = "https://ambitious-hill-0f31b8f03.azurestaticapps.net";
+const redirectUri = "http://localhost:8080";
+// const redirectUri = "https://ambitious-hill-0f31b8f03.azurestaticapps.net";
 
 const msalConfig = {
   auth: {

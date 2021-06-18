@@ -20,10 +20,11 @@
           <v-list-item three-line>
             <v-list-item-content>
               <div class="overline mb-4">
-                {{ item.city }} -- {{ item.brand}}
+                {{ item.city }}
+                {{ item.brand}}
               </div>
               <v-list-item-subtitle>
-                {{ item.hourly_price }}
+                Price per Hour: ${{ item.hourly_price }}
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item> </v-card
@@ -31,6 +32,7 @@
       ><v-col>
         <h3>Create a cab for the city of your likings.</h3>
         <form>
+          <v-text-field v-model="driver_id" label="Your Driver ID" required></v-text-field>
           <v-text-field v-model="city" label="City" required></v-text-field>
           <v-text-field v-model="brand" label="Brand" required></v-text-field>
           <v-text-field
@@ -53,6 +55,7 @@ export default {
   },
   data: function () {
     return {
+      driver_id: 1,
       city: "Amsterdam",
       brand: "",
       max_hourly_price: 100,
@@ -71,7 +74,7 @@ export default {
       this.$store.dispatch("getCabs", { city: this.search, max_price: this.max_hourly_price });
     },
     submit() {
-      this.$store.dispatch("postCab", { city: this.city, brand: this.brand, hourly_price: this.hourly_price });
+      this.$store.dispatch("postCab", { driver_id: this.driver_id, city: this.city, brand: this.brand, hourly_price: this.hourly_price });
     },
   },
 };
