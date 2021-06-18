@@ -104,13 +104,14 @@ export default new Vuex.Store({
       });
     },
     async getCabs({ commit }, data) {
-      const content = await axios.get(`${baseURL}/api/cabs?city=${data.city}`);
+      const content = await axios.get(`${baseURL}/api/cabs?city=${data.city}&max_price=${data.max_price}`);
       commit("setCabs", content.data);
     },
     async postCab(context, data) {
-      const content = await axios.post(`${baseURL}/api/cabs`, {
+      const content = await axios.post(`${baseURL}/api/driver/${data.driver_id}/cabs`, {
         city: data.city,
-        is_available: true,
+        brand: data.brand,
+        hourly_price: data.hourly_price
       });
       context.commit("setCabs", [content.data]);
     },
