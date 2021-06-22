@@ -5,11 +5,11 @@
         <div v-if="!isSignedIn">
           <h3>Login to get an access token.</h3>
         </div>
-        <div v-else>
+        <!-- <div v-else>
           <v-btn @click="obtainToken">Get Your Access Token</v-btn>
           <h3>Your Access Token:</h3>
           <h5>{{ accessToken }}</h5>
-        </div>
+        </div> -->
       </v-col>
     </v-row>
   </v-container>
